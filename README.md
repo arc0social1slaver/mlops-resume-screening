@@ -1,1 +1,1 @@
-# Resume Screening MLOps
+# Resume Screening MLOps Project
