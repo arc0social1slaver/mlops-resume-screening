@@ -1,0 +1,20 @@
+stages:
+  data_ingestion:
+    cmd: python3 -m src.data.data-ingestion
+    deps:
+    - src/data/data-ingestion.py
+    params:
+    - data_ingestion.test_size
+    - data_ingestion.random_state
+    outs:
+    - data/raw
+
+
+  data_preprocessed:
+    cmd: python3 -m src.data.data-preprocessing
+    deps:
+    - /home/src/data/data-preprocessing.py
+    - data/raw/train.csv
+    - data/raw/test.csv
+    outs:
+    - data/processed
