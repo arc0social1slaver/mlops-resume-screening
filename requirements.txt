@@ -4,3 +4,5 @@ matplotlib
 seaborn
 scikit-learn
 mlflow
+dvc
+dvc[s3]
