@@ -2,7 +2,12 @@ import yaml
 import pandas as pd
 import os
 import pickle
+from dotenv import load_dotenv
 
+load_dotenv()
+
+def get_mlflow_url():
+    return os.getenv('MLFLOW_ENDPOINT_URL')
 
 def load_params(param_path: str) -> dict:
     try:

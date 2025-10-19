@@ -6,13 +6,13 @@ import mlflow.sklearn as mlf_sklearn
 import matplotlib.pyplot as plt
 import seaborn as sns
 from mlflow.models import infer_signature
-from src.util import load_data, load_object
+from src.util import load_data, load_object, get_mlflow_url
 from src.model import ProcessingData
 from sklearn.metrics import classification_report, confusion_matrix
 
 
 def model_evaluation(X_test, y_test, processor: ProcessingData) -> None:
-    mlflow.set_tracking_uri('http://localhost:8888')
+    mlflow.set_tracking_uri(get_mlflow_url())
     mlflow.set_experiment('DVC pipeline')
     with mlflow.start_run() as run:
         try:
