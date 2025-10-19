@@ -3,18 +3,46 @@ stages:
     cmd: python3 -m src.data.data-ingestion
     deps:
     - src/data/data-ingestion.py
-    params:
-    - data_ingestion.test_size
-    - data_ingestion.random_state
     outs:
-    - data/raw
+    - data/raw/resume.csv
 
 
-  data_preprocessed:
+  data_preprocessing:
     cmd: python3 -m src.data.data-preprocessing
     deps:
-    - /home/src/data/data-preprocessing.py
-    - data/raw/train.csv
-    - data/raw/test.csv
+    - src/data/data-preprocessing.py
+    - data/raw/resume.csv
+    params:
+    - data_preprocessing.test_size
+    - data_preprocessing.random_state
     outs:
+    - data/res/encoder.pkl
+    - data/res/tfidf.pkl
     - data/processed
+
+  model_building:
+    cmd: python3 -m src.model.model-building
+    deps:
+    - data/processed/train.csv
+    - src/model/model-building.py
+    outs:
+    - data/res/clf.pkl
+
+  model_evaluation:
+    cmd: python3 -m src.model.model-evaluation
+    deps:
+    - src/model/model-evaluation.py
+    - data/processed/train.csv
+    - data/processed/test.csv
+    - data/res/encoder.pkl
+    - data/res/tfidf.pkl
+    - data/res/clf.pkl
+    outs:
+    - data/experiment-info.json
+    - data/confusion_matrix.png
+
+  model_registration:
+    cmd: python3 -m src.model.register-model
+    deps:
+    - src/model/register-model.py
+    - data/experiment-info.json
