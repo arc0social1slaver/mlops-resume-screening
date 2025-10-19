@@ -21,5 +21,3 @@ if __name__=="__main__":
     finalDf = balance_classes(df)
 
     save_data(finalDf, os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../data/raw') , "resume.csv")
-    # train_data, test_data = train_test_split(finalDf, test_size=params['data_ingestion']['test_size'], random_state=params['data_ingestion']['random_state'])
-    # save_data(train_data, test_data, data_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../data'), mode='raw')
