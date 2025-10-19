@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Screening App</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #6B7280, #3B82F6);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .upload-area {
+            border: 2px dashed #93C5FD;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            background: #EFF6FF;
+            border-color: #3B82F6;
+        }
+        .result-area {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #F9FAFB;
+            border-radius: 0.5rem;
+            min-height: 100px;
+            display: none;
+        }
+        .btn {
+            background: #3B82F6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #2563EB;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Resume Screening App</h1>
+        <form id="resumeForm" enctype="multipart/form-data">
+            <div class="upload-area" onclick="document.getElementById('resumeInput').click()">
+                <input type="file" id="resumeInput" accept=".pdf,.doc,.docx,.txt" class="hidden">
+                <p class="text-gray-600">Click to upload your resume (PDF, DOC, DOCX, TXT)</p>
+                <p class="text-sm text-gray-400 mt-2">Max file size: 5MB</p>
+            </div>
+            <div class="mt-4 text-center">
+                <button type="submit" class="btn">Screen Resume</button>
+            </div>
+        </form>
+        <div id="resultArea" class="result-area">
+            <h2 class="text-lg font-semibold text-gray-700">Screening Results</h2>
+            <p id="resultText" class="text-gray-600 mt-2">Your resume analysis will appear here.</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('resumeForm');
+        const resultArea = document.getElementById('resultArea');
+        const resultText = document.getElementById('resultText');
+        const resumeInput = document.getElementById('resumeInput');
+
+        resumeInput.addEventListener('change', (e) => {
+            const fileName = e.target.files[0]?.name || 'No file selected';
+            document.querySelector('.upload-area p').textContent = fileName;
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const file = resumeInput.files[0];
+            if (file) {
+                const formIP = new FormData();
+                formIP.append('file',file);
+                resultArea.style.display = 'block';
+                resultText.textContent = `Analyzing ${file.name}... Please wait.`;
+
+                try {
+                    const resp = await fetch('/predict', {
+                        method: 'POST',
+                        body: formIP
+                    })
+
+                    const rawData = await resp.json()
+                    resultText.textContent = `Analysis complete for ${file.name}. Results: ${rawData.message}`;
+                } catch (error) {
+                    console.error(error);
+                    resultText.textContent = `Server is busy. Try again later`;
+                }
+            } else {
+                resultText.textContent = 'Please upload a resume first.';
+                resultArea.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
