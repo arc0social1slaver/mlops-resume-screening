@@ -5,44 +5,62 @@ import json
 import mlflow.sklearn as mlf_sklearn
 from src.util import load_object, get_mlflow_url
 
+
 def load_model_info(file_path: str) -> dict:
     """Load the model info from a JSON file."""
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, "r") as file:
             model_info = json.load(file)
         return model_info
     except Exception as e:
         print(e)
         raise
 
+
 def cleanResume(txt):
-    cleanText = re.sub('http\S+\s', ' ', txt)
-    cleanText = re.sub('RT|cc', ' ', cleanText)
-    cleanText = re.sub('#\S+\s', ' ', cleanText)
-    cleanText = re.sub('@\S+', '  ', cleanText)  
-    cleanText = re.sub('[%s]' % re.escape("""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""), ' ', cleanText)
-    cleanText = re.sub(r'[^\x00-\x7f]', ' ', cleanText) 
-    cleanText = re.sub('\s+', ' ', cleanText)
+    cleanText = re.sub("http\S+\s", " ", txt)
+    cleanText = re.sub("RT|cc", " ", cleanText)
+    cleanText = re.sub("#\S+\s", " ", cleanText)
+    cleanText = re.sub("@\S+", "  ", cleanText)
+    cleanText = re.sub(
+        "[%s]" % re.escape("""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""), " ", cleanText
+    )
+    cleanText = re.sub(r"[^\x00-\x7f]", " ", cleanText)
+    cleanText = re.sub("\s+", " ", cleanText)
     return cleanText
 
+
 # Function to predict the category of a resume
-def pred(input_resume, model_version = "latest"):
-    
+def pred(input_resume, model_version="latest"):
+
     mlflow.set_tracking_uri(get_mlflow_url())
-    my_tfidf = load_object(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../data/res/tfidf.pkl'))
-    my_le = load_object(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../data/res/encoder.pkl'))
-    model_info = load_model_info(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../data/experiment-info.json'))
-    
-    model_uri = "models:/{}/{}".format(model_info.get('model_path'), model_version)
+    my_tfidf = load_object(
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "../../data/res/tfidf.pkl"
+        )
+    )
+    my_le = load_object(
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "../../data/res/encoder.pkl"
+        )
+    )
+    model_info = load_model_info(
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "../../data/experiment-info.json",
+        )
+    )
+
+    model_uri = "models:/{}/{}".format(model_info.get("model_path"), model_version)
     my_model = mlf_sklearn.load_model(model_uri)
 
     # Preprocess the input text (e.g., cleaning, etc.)
 
-    cleaned_text = cleanResume(input_resume) 
+    cleaned_text = cleanResume(input_resume)
 
     # Vectorize the cleaned text using the same TF-IDF vectorizer used during training
     vectorized_text = my_tfidf.transform([cleaned_text])
-    
+
     # Convert sparse matrix to dense
     vectorized_text = vectorized_text.toarray()
 
