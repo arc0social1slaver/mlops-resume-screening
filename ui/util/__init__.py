@@ -33,7 +33,7 @@ def pred(input_resume, model_version = "latest"):
     my_le = load_object(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../data/res/encoder.pkl'))
     model_info = load_model_info(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../data/experiment-info.json'))
     
-    model_uri = f"models:/{model_info["model_path"]}/{model_version}"
+    model_uri = "models:/{}/{}".format(model_info.get('model_path'), model_version)
     my_model = mlf_sklearn.load_model(model_uri)
 
     # Preprocess the input text (e.g., cleaning, etc.)
