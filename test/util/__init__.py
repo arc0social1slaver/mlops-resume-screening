@@ -3,22 +3,37 @@ from ui.util import cleanResume
 from src.util import load_object
 
 
-def prediction(fileName : str):
-    my_tfidf = load_object(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../artifact/tfidf.pkl'))
-    my_le = load_object(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../artifact/encoder.pkl'))
+def prediction(fileName: str):
+    my_tfidf = load_object(
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "../artifact/tfidf.pkl"
+        )
+    )
+    my_le = load_object(
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "../artifact/encoder.pkl"
+        )
+    )
 
-    my_model = load_object(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../artifact/clf.pkl'))
+    my_model = load_object(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "../artifact/clf.pkl")
+    )
 
     # Preprocess the input text (e.g., cleaning, etc.)
 
-    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), f"../input/{fileName}"), 'r') as file:
+    with open(
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), f"../input/{fileName}"
+        ),
+        "r",
+    ) as file:
         input_resume = file.read()
 
-    cleaned_text = cleanResume(input_resume) 
+    cleaned_text = cleanResume(input_resume)
 
     # Vectorize the cleaned text using the same TF-IDF vectorizer used during training
     vectorized_text = my_tfidf.transform([cleaned_text])
-    
+
     # Convert sparse matrix to dense
     vectorized_text = vectorized_text.toarray()
 
