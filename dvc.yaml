@@ -4,7 +4,7 @@ stages:
     deps:
     - src/data/data-ingestion.py
     outs:
-    - data/raw/resume.csv
+    - data/raw
 
 
   data_preprocessing:
