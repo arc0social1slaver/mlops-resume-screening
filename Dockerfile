@@ -1,11 +1,12 @@
-FROM continuumio/miniconda3
+FROM python:3.13-slim
 
-ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /home
 
-COPY requirement.txt .
+COPY requirements.txt .
 
-RUN pip install -r requirement.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
 
 CMD ["/bin/bash"]
